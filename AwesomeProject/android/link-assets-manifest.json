@@ -1,0 +1,41 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/Simulator Screen Shot - iPhone SE (3rd generation) - 2023-03-21 at 19.32.46.png",
+      "sha1": "065fab867c3ed1bb0bf8f41273ce0b8b390915ed"
+    },
+    {
+      "path": "assets/bgs/japan.jpg",
+      "sha1": "d3c8e5ef9075b25f5802f39ffd4661fbaf70bebd"
+    },
+    {
+      "path": "assets/bgs/video.mp4",
+      "sha1": "6691a484b386715583fe235c5e5f0ff58f750603"
+    },
+    {
+      "path": "assets/done.gif",
+      "sha1": "b50af7a58031e6f2d4003cb9707066786bc42d04"
+    },
+    {
+      "path": "assets/tab-icons/exchange.png",
+      "sha1": "e5948cac2baa4a41ac1692ecc852a89b942aeee3"
+    },
+    {
+      "path": "assets/tab-icons/home.png",
+      "sha1": "3412c1a6b5c79838c56d3412df1e010c0f6471cf"
+    },
+    {
+      "path": "assets/tab-icons/location.png",
+      "sha1": "ebb18754f1d160ba1b64fec97e75c027913ee1af"
+    },
+    {
+      "path": "assets/tab-icons/profile.png",
+      "sha1": "dfeb22b89fa7637ab0f7d0298b1451edb7cd8eac"
+    },
+    {
+      "path": "assets/tab-icons/xx.png",
+      "sha1": "dfeb22b89fa7637ab0f7d0298b1451edb7cd8eac"
+    }
+  ]
+}
