@@ -1,0 +1,1 @@
+scp /Users/willytt/Desktop/tecky/4-FRD/Showcase_TripApp/nest-project/production/docker-compose.yml trip:/home/ubuntu/docker/docker-compose.yml

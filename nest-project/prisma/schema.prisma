@@ -1,0 +1,204 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int      @id @default(autoincrement())
+  email            String   @unique @db.VarChar(255)
+  password         String   @db.VarChar()
+  nickname         String   @db.VarChar(255)
+  gender           String?  @db.VarChar(6)
+  phone            String?  @db.VarChar(8)
+  icon             String?  @db.VarChar(255)
+  selfIntroduction String?  @db.Text
+  role             Role     @default(USER)
+  createdAt        DateTime @default(now()) @db.Timestamp(6)
+  updatedAt        DateTime @default(now()) @db.Timestamp(6)
+
+  followers       UserFollow[]      @relation("UserFollows_follower")
+  followings      UserFollow[]      @relation("UserFollows_following")
+  createPlans     TravelPlan[]
+  likePlans       PlanLikes[]       @relation("PlanLikes_likeUser")
+  travelPlanShare TravelPlanShare[]
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model UserFollow {
+  id          Int      @id @default(autoincrement())
+  follower    User     @relation("UserFollows_follower", fields: [followerId], references: [id])
+  followerId  Int      @db.Integer
+  following   User     @relation("UserFollows_following", fields: [followingId], references: [id])
+  followingId Int      @db.Integer
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime @default(now()) @db.Timestamp(6)
+
+  @@unique([followerId, followingId])
+}
+
+model Country {
+  id        Int      @id @default(autoincrement())
+  engName   String   @db.VarChar(255)
+  chName    String   @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+
+  areas             Area[]
+  travelPlanDetails TravelPlanDetail[]
+  transportations   Transportation[]
+  emergencyContact  EmergencyContact[]
+}
+
+model Area {
+  id        Int      @id @default(autoincrement())
+  engName   String   @db.VarChar(255)
+  chName    String   @db.VarChar(255)
+  country   Country  @relation(fields: [countryId], references: [id])
+  countryId Int      @db.Integer
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+
+  cities            City[]
+  travelPlanDetails TravelPlanDetail[]
+}
+
+model City {
+  id        Int      @id @default(autoincrement())
+  engName   String   @db.VarChar(255)
+  chName    String   @db.VarChar(255)
+  area      Area     @relation(fields: [areaId], references: [id])
+  areaId    Int      @db.Integer
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+
+  travelPlanDetails TravelPlanDetail[]
+}
+
+model TravelPlan {
+  id              Int         @id @default(autoincrement())
+  author          User        @relation(fields: [authorId], references: [id])
+  authorId        Int         @db.Integer
+  name            String      @db.VarChar(255)
+  referencePlan   TravelPlan? @relation("TravelPlan_referencePlan", fields: [referencePlanId], references: [id])
+  referencePlanId Int?        @db.Integer
+  startDay        DateTime    @db.Timestamp(6)
+  endDay          DateTime    @db.Timestamp(6)
+  thumbnail       String?     @db.Text
+  status          Status      @default(PUBLIC)
+  createdAt       DateTime    @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime    @default(now()) @db.Timestamp(6)
+
+  travelPlanDay      TravelPlanDay[]
+  likes              PlanLikes[]       @relation("PlanLikes_travelPlan")
+  travelPlanChildren TravelPlan[]      @relation("TravelPlan_referencePlan")
+  TravelPlanShare    TravelPlanShare[]
+}
+
+enum Status {
+  PUBLIC
+  PRIVATE
+}
+
+model TravelPlanDay {
+  id           Int        @id @default(autoincrement())
+  travelPlan   TravelPlan @relation(fields: [travelPlanId], references: [id])
+  travelPlanId Int        @db.Integer
+  whichDay     Int        @db.Integer
+  createdAt    DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime   @default(now()) @db.Timestamp(6)
+
+  travelPlanDetail TravelPlanDetail[]
+}
+
+model TravelPlanDetail {
+  id              Int           @id @default(autoincrement())
+  travelPlanDay   TravelPlanDay @relation(fields: [travelPlanDayId], references: [id])
+  travelPlanDayId Int           @db.Integer
+  country         Country       @relation(fields: [countryId], references: [id])
+  countryId       Int           @db.Integer
+  area            Area?         @relation(fields: [areaId], references: [id])
+  areaId          Int?          @db.Integer
+  city            City?         @relation(fields: [cityId], references: [id])
+  cityId          Int?          @db.Integer
+  locationName    String        @db.VarChar(255)
+  locationImg     String?       @db.Text
+  category        String        @db.VarChar(255)
+  address         String?       @db.Text
+  tel             String?       @db.VarChar(20)
+  startTime       String        @db.VarChar(10)
+  endTime         String        @db.VarChar(10)
+  transportation  String?       @db.VarChar(50)
+  notes           String?       @db.Text
+  createdAt       DateTime      @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime      @default(now()) @db.Timestamp(6)
+}
+
+model TravelPlanShare {
+  id           Int        @id @default(autoincrement())
+  travelPlan   TravelPlan @relation(fields: [travelPlanId], references: [id])
+  travelPlanId Int        @db.Integer
+  shareUser    User       @relation(fields: [shareUserId], references: [id])
+  shareUserId  Int        @db.Integer
+}
+
+model Transportation {
+  id        Int      @id @default(autoincrement())
+  category  String   @db.VarChar(50)
+  country   Country  @relation(fields: [countryId], references: [id])
+  countryId Int      @db.Integer
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+
+  TransportationsDetails TransportationsDetail[]
+}
+
+model TransportationsDetail {
+  id         Int            @id @default(autoincrement())
+  name       String         @db.VarChar(50)
+  img        String?        @db.VarChar(255)
+  url        String?        @db.VarChar(255)
+  category   Transportation @relation(fields: [categoryId], references: [id])
+  categoryId Int            @db.Integer
+  createdAt  DateTime       @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime       @default(now()) @db.Timestamp(6)
+}
+
+model PlanLikes {
+  id           Int        @id @default(autoincrement())
+  likeUser     User       @relation("PlanLikes_likeUser", fields: [likeUserId], references: [id])
+  likeUserId   Int        @db.Integer
+  travelPlan   TravelPlan @relation("PlanLikes_travelPlan", fields: [travelPlanId], references: [id])
+  travelPlanId Int        @db.Integer
+  createdAt    DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime   @default(now()) @db.Timestamp(6)
+
+  @@unique([likeUserId, travelPlanId])
+}
+
+model FoulLanguage {
+  id        Int      @id @default(autoincrement())
+  words     String   @db.Text
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+}
+
+model EmergencyContact {
+  id        Int      @id @default(autoincrement())
+  Country   Country  @relation(fields: [CountryId], references: [id])
+  CountryId Int      @db.Integer
+  tel       String   @db.VarChar(50)
+  address   String?  @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+}
